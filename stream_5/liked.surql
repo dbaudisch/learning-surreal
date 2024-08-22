@@ -27,7 +27,7 @@ DEFINE EVENT OVERWRITE on_create_update_likes_count ON TABLE liked
         IF $after.out.id IS NONE {
             THROW "Can't like something that doesn't exist";
         };
-        IF meta::tb($after.out) == "comment" AND $after.out.approved != true {
+        IF meta::tb($after.out) == "comment" AND $after.out.approved == false {
             THROW "Can't like an unapproved comment";
         };
         LET $new_count = $after.out.likes_count + 1;
