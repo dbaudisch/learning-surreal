@@ -1,93 +1,108 @@
-DEFINE TABLE post TYPE NORMAL SCHEMAFULL;
+DEFINE TABLE OVERWRITE post TYPE NORMAL SCHEMAFULL;
 
-DEFINE FIELD title
+DEFINE FIELD OVERWRITE title
     ON TABLE post
     TYPE string
 ;
 
-DEFINE FIELD description
+DEFINE FIELD OVERWRITE description
     ON TABLE post
     TYPE string
 ;
 
-DEFINE FIELD slug
+DEFINE FIELD OVERWRITE slug
     ON TABLE post
     TYPE string
     ASSERT string::len($value) > 3 AND $value == string::slug($value)
 ;
 
-DEFINE FIELD featured
+DEFINE FIELD OVERWRITE featured
     ON TABLE post
 	TYPE bool
     DEFAULT false
 ;
 
-DEFINE FIELD obsolete
+DEFINE FIELD OVERWRITE obsolete
     ON TABLE post
 	TYPE bool
 ;
 
-DEFINE FIELD draft
+DEFINE FIELD OVERWRITE draft
     ON TABLE post
 	TYPE bool
     DEFAULT true
 ;
 
-DEFINE FIELD learnable
+DEFINE FIELD OVERWRITE learnable
     ON TABLE post
 	TYPE bool
     DEFAULT false
 ;
 
-DEFINE FIELD og_image
+DEFINE FIELD OVERWRITE og_image
     ON TABLE post
     TYPE string
 ;
 
-DEFINE FIELD published_on
+DEFINE FIELD OVERWRITE published_on
     ON TABLE post
     TYPE set<string>
+    DEFAULT []
     COMMENT "URLs to version of this post on other sites"
 ;
 
-DEFINE FIELD published_on.*
+DEFINE FIELD OVERWRITE published_on.*
     ON TABLE post
     TYPE string
     ASSERT string::is::url($value)
 ;
 
-DEFINE FIELD published_at
+DEFINE FIELD OVERWRITE published_at
     ON TABLE post
 	TYPE datetime
     COMMENT "The date and time the post was first published"
 ;
 
-DEFINE FIELD updates
+DEFINE FIELD OVERWRITE updates
     ON TABLE post
     TYPE set<object>
     DEFAULT []
     COMMENT "List of updates to the content of the post"
 ;
 
-DEFINE FIELD updates.*.date
+DEFINE FIELD OVERWRITE updates.*.date
     ON TABLE post
 	TYPE datetime
     ASSERT $value > $this.published_at
 ;
 
-DEFINE FIELD updates.*.description
+DEFINE FIELD OVERWRITE updates.*.description
     ON TABLE post
 	TYPE string
 ;
 
-DEFINE FIELD last_updated
+DEFINE FIELD OVERWRITE last_updated
     ON TABLE post
 	TYPE datetime
     DEFAULT $this.published_at
     COMMENT "The date and time the post was last updated"
 ;
 
-DEFINE EVENT on_post_date_update
+DEFINE FIELD OVERWRITE likes_count
+    ON TABLE post
+	TYPE int
+    DEFAULT 0
+    COMMENT "Calculated automatically"
+;
+
+DEFINE FIELD OVERWRITE comments_count
+    ON TABLE post
+	TYPE int
+    DEFAULT 0
+    COMMENT "Calculated automatically"
+;
+
+DEFINE EVENT OVERWRITE on_post_date_update
     ON TABLE post
     WHEN
         $event != "DELETE"
@@ -103,7 +118,7 @@ DEFINE EVENT on_post_date_update
     }
 ;
 
-DEFINE INDEX unique_slug
+DEFINE INDEX OVERWRITE unique_slug
     ON TABLE post 
     COLUMNS slug
     UNIQUE;

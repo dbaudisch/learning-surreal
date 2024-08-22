@@ -1,38 +1,71 @@
-DEFINE TABLE comment TYPE NORMAL SCHEMAFULL;
+DEFINE TABLE OVERWRITE comment TYPE NORMAL SCHEMAFULL
+    PERMISSIONS
+        FOR select WHERE approved = true
+        FOR create FULL
+;
 
-DEFINE FIELD content
+DEFINE FIELD OVERWRITE content
     ON TABLE comment
     TYPE string
     ASSERT string::len($value) <= 1000
 ;
 
-DEFINE FIELD author
+DEFINE FIELD OVERWRITE author
     ON TABLE comment
     TYPE record<user>
     ASSERT !!$value.id
+    PERMISSIONS
+        FOR create WHERE author = $auth.id
 ;
 
-DEFINE FIELD created_at
+DEFINE FIELD OVERWRITE created_at
     ON TABLE comment
     TYPE datetime
     VALUE time::now()
     READONLY
 ;
 
-DEFINE FIELD post
+DEFINE FIELD OVERWRITE post
     ON TABLE comment
     TYPE record<post>
-    ASSERT !!$value.id AND ($this.reply_to IS NONE OR $this.reply_to.post.id == $value.id)
+    ASSERT $this.reply_to IS NONE OR $this.reply_to.post.id == $value.id
+    READONLY
 ;
 
-DEFINE FIELD reply_to
+DEFINE FIELD OVERWRITE reply_to
     ON TABLE comment
     TYPE option<record<comment>>
     ASSERT $value IS NONE OR !!$value.id
 ;
 
-DEFINE FIELD approved
+DEFINE FIELD OVERWRITE likes_count
+    ON TABLE comment
+	TYPE int
+    DEFAULT 0
+    PERMISSIONS
+        FOR create, update, delete NONE
+        FOR select FULL
+    COMMENT "Calculated automatically"
+;
+
+DEFINE FIELD OVERWRITE approved
     ON TABLE comment
   	TYPE bool
     DEFAULT false
+    PERMISSIONS
+        FOR select, update, create, delete NONE
+;
+
+DEFINE EVENT OVERWRITE on_comment_created ON TABLE comment
+    WHEN $event == "CREATE"
+    THEN {
+        IF $after.post.id IS NONE {
+            THROW "Can't comment on something that doesn't exist";
+        };
+        UPDATE $after.id SET
+            approved = false,
+            likes_count = 0
+        ;
+        # TODO: This is an opportunity to automatically approve the comment if it's the author's comment
+    }
 ;

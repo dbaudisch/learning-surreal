@@ -3,38 +3,37 @@ DEFINE TABLE approved
     SCHEMAFULL
 ;
 
-REMOVE FIELD in ON TABLE approved;
-DEFINE FIELD in
+
+DEFINE FIELD OVERWRITE in
     ON TABLE approved
     TYPE record<user>
-    ASSERT !!$value.id AND $value.id IN $this->comment.post<-authored<-user.id
+    ASSERT !!$value.id AND $value.id IN (SELECT VALUE ->comment.post<-authored<-user.id FROM ONLY $this LIMIT 1).flatten()
 ;
 
-REMOVE FIELD out ON TABLE approved;
-DEFINE FIELD out
+DEFINE FIELD OVERWRITE out
     ON TABLE approved
     TYPE record<comment>
     ASSERT !!$value.id
 ;
 
-DEFINE FIELD date
+DEFINE FIELD OVERWRITE date
     ON TABLE approved
     TYPE datetime
     VALUE time::now()
     READONLY
 ;
 
-DEFINE FIELD note
+DEFINE FIELD OVERWRITE note
     ON TABLE approved
     TYPE option<string>
 ;
 
-DEFINE INDEX only_one_approval_per_comment
+DEFINE INDEX OVERWRITE only_one_approval_per_comment
     ON TABLE approved 
     COLUMNS out UNIQUE;
 
 
-DEFINE EVENT on_approval_creation
+DEFINE EVENT OVERWRITE on_approval_creation
     ON TABLE approved
     WHEN
         $event == "CREATE"
@@ -43,7 +42,7 @@ DEFINE EVENT on_approval_creation
     }
 ;
 
-DEFINE EVENT on_approval_deletion
+DEFINE EVENT OVERWRITE on_approval_deletion
     ON TABLE approved
     WHEN
         $event == "DELETE"
@@ -52,7 +51,7 @@ DEFINE EVENT on_approval_deletion
     }
 ;
 
-DEFINE EVENT on_approval_update
+DEFINE EVENT OVERWRITE on_approval_update
     ON TABLE approved
     WHEN
         $event == "UPDATE"

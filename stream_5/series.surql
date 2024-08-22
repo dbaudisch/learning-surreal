@@ -1,22 +1,22 @@
-DEFINE TABLE series TYPE NORMAL SCHEMAFULL;
+DEFINE TABLE OVERWRITE series TYPE NORMAL SCHEMAFULL;
 
-DEFINE FIELD name
+DEFINE FIELD OVERWRITE name
     ON TABLE series
     TYPE string
 ;
 
-DEFINE FIELD description
+DEFINE FIELD OVERWRITE description
     ON TABLE series
     TYPE string
 ;
 
-DEFINE FIELD slug
+DEFINE FIELD OVERWRITE slug
     ON TABLE series
     TYPE string
     ASSERT string::len($value) > 3 AND $value == string::slug($value)
 ;
 
-DEFINE INDEX unique_slug
+DEFINE INDEX OVERWRITE unique_slug
     ON TABLE series 
     COLUMNS slug
     UNIQUE;
