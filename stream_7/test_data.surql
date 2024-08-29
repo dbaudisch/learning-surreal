@@ -1,3 +1,4 @@
+-- GENERATE TEST USERS
 LET $authors: array = (<array>1..=5).map(|$i| "testuser" + <string>$i).map(|$name| {username: $name, id: type::thing("user", $name)});
 
 FOR $author IN $authors {
@@ -7,6 +8,7 @@ FOR $author IN $authors {
     ;
 }
 
+-- GENERATE TEST POSTS
 LET $posts: array = (<array>1..=2000).map(|$i| "post" + <string>$i).map(|$name| {title: $name, id: type::thing("post", $name)});
 
 FOR $post IN $posts {
@@ -21,7 +23,19 @@ FOR $post IN $posts {
         published_at = time::now()
     ;
     RELATE rand::enum($authors).id->authored->$post.id;
-}
+};
+
+-- GENERATE TEST LIKES
+FOR $author in $authors {
+    LET $likes_count = rand::int($posts.len() / 10, $posts.len() / 2);
+    LET $posts_to_like = (<array>0..$likes_count).map(|$i| type::thing("post", "post" + <string>rand::int(1, 2000))).distinct();
+    
+    FOR $post_to_like IN $posts_to_like {
+        RELATE ($author.id)->liked->$post_to_like;
+    };
+};
+
+
 
 CREATE comment SET
     content = "Give up already!",
