@@ -1,18 +1,19 @@
 DEFINE TABLE OVERWRITE learned
     TYPE RELATION
     SCHEMAFULL
+    PERMISSIONS
+        FOR select, create, delete WHERE in = $auth.id
 ;
 
 DEFINE FIELD OVERWRITE in
     ON TABLE learned
     TYPE record<user>
-    ASSERT $value.exists() 
+    ASSERT $value.exists()
 ;
 
 DEFINE FIELD OVERWRITE out
     ON TABLE learned
     TYPE record<post>
-    ASSERT $value.exists() AND $value.learnable
 ;
 
 DEFINE FIELD OVERWRITE date
@@ -25,3 +26,16 @@ DEFINE FIELD OVERWRITE date
 DEFINE INDEX OVERWRITE unique_relation
     ON TABLE learned 
     COLUMNS in, out UNIQUE;
+
+DEFINE EVENT OVERWRITE on_learn_create ON TABLE learned
+    WHEN $event == "CREATE"
+    THEN {
+        LET $post = $after.out;
+        IF !$post.exists() OR $post.draft {
+            THROW "Can't learn something that doesn't exist";
+        };
+        IF !$post.learnable {
+            THROW "Can't learn a non-learnable post";
+        };
+    }
+;
