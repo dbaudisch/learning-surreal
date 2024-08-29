@@ -2,6 +2,8 @@ DEFINE TABLE OVERWRITE authored
     TYPE RELATION
     IN user OUT post ENFORCED
     SCHEMAFULL
+    PERMISSIONS
+        FOR select WHERE in = $auth.id
 ;
 
 DEFINE FIELD OVERWRITE notes
