@@ -2,7 +2,7 @@ DEFINE TABLE OVERWRITE learned
     TYPE RELATION
     SCHEMAFULL
     PERMISSIONS
-        FOR select, create, delete WHERE in = $auth.id
+        FOR select, create, delete WHERE $access = "users" AND in = $auth.id
 ;
 
 DEFINE FIELD OVERWRITE in

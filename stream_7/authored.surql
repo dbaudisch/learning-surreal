@@ -3,7 +3,7 @@ DEFINE TABLE OVERWRITE authored
     IN user OUT post ENFORCED
     SCHEMAFULL
     PERMISSIONS
-        FOR select WHERE in = $auth.id
+        FOR select WHERE $access = "users" AND in = $auth.id
 ;
 
 DEFINE FIELD OVERWRITE notes
