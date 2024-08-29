@@ -1,15 +1,27 @@
-CREATE post:post4 SET
-    title = "Post 4",
-    description = "...",
-    slug = "post-4",
-    obsolete = false,
-    draft = false,
-    learnable = true,
-    og_image = "wololo.png",
-    published_at = time::now()
-;
+LET $authors: array = (<array>1..=5).map(|$i| "testuser" + <string>$i).map(|$name| {username: $name, id: type::thing("user", $name)});
 
-RELATE user:user_2kg38yfLgcs5xwqbzLfcmRzAHp8->authored->[post:post1, post:post2, post:post3, post:post4];
+FOR $author IN $authors {
+    CREATE $author.id SET
+        username = $author.username,
+        email = $author.username + "@xkonti.tech"
+    ;
+}
+
+LET $posts: array = (<array>1..=2000).map(|$i| "post" + <string>$i).map(|$name| {title: $name, id: type::thing("post", $name)});
+
+FOR $post IN $posts {
+    CREATE $post.id SET
+        title = $post.title,
+        description = "...",
+        slug = $post.title.slug(),
+        obsolete = false,
+        draft = rand::bool(),
+        learnable = rand::bool(),
+        og_image = "wololo.png",
+        published_at = time::now()
+    ;
+    RELATE rand::enum($authors).id->authored->$post.id;
+}
 
 CREATE comment SET
     content = "Give up already!",
