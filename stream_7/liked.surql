@@ -25,14 +25,15 @@ DEFINE INDEX OVERWRITE unique_relation
 DEFINE EVENT OVERWRITE on_create_update_likes_count ON TABLE liked
     WHEN $event == "CREATE"
     THEN {
-        IF !$after.out.exists() {
+        LET $target = $after.out;
+        IF !$target.exists() OR $target.draft {
             THROW "Can't like something that doesn't exist";
         };
-        IF $after.out.table() == "comment" AND $after.out.approved == false {
+        IF $target.table() == "comment" AND $target.approved == false {
             THROW "Can't like an unapproved comment";
         };
-        LET $new_count = $after.out.likes_count + 1;
-        UPDATE $after.out SET likes_count = $new_count;
+        LET $new_count = $target.likes_count + 1;
+        UPDATE $target SET likes_count = $new_count;
     }
 ;
 
