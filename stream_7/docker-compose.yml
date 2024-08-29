@@ -11,7 +11,7 @@ services:
       - ${DB_USER}
       - --pass
       - ${DB_PASSWORD}
-      - surrealkv:/data/streaming-surreal.db
+      - surrealkv:data/streaming-surreal
     volumes:
       - /host/path/to/surrealdb:/data
     ports:
