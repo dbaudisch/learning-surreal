@@ -59,7 +59,7 @@ DEFINE FIELD OVERWRITE approved
 DEFINE EVENT OVERWRITE on_comment_created ON TABLE comment
     WHEN $event == "CREATE"
     THEN {
-        IF !$after.post.exists() {
+        IF !$after.post.exists() OR $after.post.draft {
             THROW "Can't comment on something that doesn't exist";
         };
         UPDATE $after.id SET
