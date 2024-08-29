@@ -7,13 +7,13 @@ DEFINE TABLE OVERWRITE comment TYPE NORMAL SCHEMAFULL
 DEFINE FIELD OVERWRITE content
     ON TABLE comment
     TYPE string
-    ASSERT string::len($value) <= 1000
+    ASSERT $value.len() <= 1000
 ;
 
 DEFINE FIELD OVERWRITE author
     ON TABLE comment
     TYPE record<user>
-    ASSERT !!$value.id
+    ASSERT $value.exists()
     PERMISSIONS
         FOR create WHERE author = $auth.id
 ;
@@ -35,7 +35,7 @@ DEFINE FIELD OVERWRITE post
 DEFINE FIELD OVERWRITE reply_to
     ON TABLE comment
     TYPE option<record<comment>>
-    ASSERT $value IS NONE OR !!$value.id
+    ASSERT $value IS NONE OR $value.exists()
 ;
 
 DEFINE FIELD OVERWRITE likes_count
@@ -59,7 +59,7 @@ DEFINE FIELD OVERWRITE approved
 DEFINE EVENT OVERWRITE on_comment_created ON TABLE comment
     WHEN $event == "CREATE"
     THEN {
-        IF $after.post.id IS NONE {
+        IF !$after.post.exists() {
             THROW "Can't comment on something that doesn't exist";
         };
         UPDATE $after.id SET

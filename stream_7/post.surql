@@ -13,7 +13,7 @@ DEFINE FIELD OVERWRITE description
 DEFINE FIELD OVERWRITE slug
     ON TABLE post
     TYPE string
-    ASSERT string::len($value) > 3 AND $value == string::slug($value)
+    ASSERT $value.len() > 3 AND $value == $value.slug()
 ;
 
 DEFINE FIELD OVERWRITE featured
@@ -54,8 +54,7 @@ DEFINE FIELD OVERWRITE published_on
 DEFINE FIELD OVERWRITE published_on.*
     ON TABLE post
     TYPE string
-    ASSERT string::is::url($value)
-;
+    ASSERT $value.is_url();
 
 DEFINE FIELD OVERWRITE published_at
     ON TABLE post
@@ -108,7 +107,7 @@ DEFINE EVENT OVERWRITE on_post_date_update
         $event != "DELETE"
         AND ($before.published_at != $after.published_at OR $before.updates != $after.updates)
     THEN {
-        IF array::len($after.updates) > 0 {
+        IF $after.updates.len() > 0 {
             LET $lastest_update = (SELECT VALUE date FROM ONLY $after.updates ORDER BY date DESC LIMIT 1);
             UPDATE $after.id SET last_updated = $lastest_update;
         }

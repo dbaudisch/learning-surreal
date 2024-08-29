@@ -8,13 +8,14 @@ DEFINE TABLE OVERWRITE liked
 DEFINE FIELD OVERWRITE in
     ON TABLE liked
     TYPE record<user>
-    ASSERT !!$value.id
+    ASSERT $value.exists()
     PERMISSIONS FOR create WHERE id == $auth.id
 ;
 
 DEFINE FIELD OVERWRITE out
     ON TABLE liked
     TYPE record<post|comment>
+    -- Can't check if the post exists because the user doesn't have access to it
 ;
 
 DEFINE INDEX OVERWRITE unique_relation
@@ -24,10 +25,10 @@ DEFINE INDEX OVERWRITE unique_relation
 DEFINE EVENT OVERWRITE on_create_update_likes_count ON TABLE liked
     WHEN $event == "CREATE"
     THEN {
-        IF $after.out.id IS NONE {
+        IF !$after.out.exists() {
             THROW "Can't like something that doesn't exist";
         };
-        IF meta::tb($after.out) == "comment" AND $after.out.approved == false {
+        IF $after.out.table() == "comment" AND $after.out.approved == false {
             THROW "Can't like an unapproved comment";
         };
         LET $new_count = $after.out.likes_count + 1;

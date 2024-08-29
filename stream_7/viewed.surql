@@ -1,18 +1,7 @@
 DEFINE TABLE OVERWRITE viewed
     TYPE RELATION
+    IN user OUT post|series|topic ENFORCED
     SCHEMAFULL
-;
-
-DEFINE FIELD OVERWRITE in
-    ON TABLE viewed
-    TYPE record<user>
-    ASSERT !!$value.id
-;
-
-DEFINE FIELD OVERWRITE out
-    ON TABLE viewed
-    TYPE record<post|series|topic>
-    ASSERT !!$value.id
 ;
 
 DEFINE FIELD OVERWRITE date

@@ -6,13 +6,13 @@ DEFINE TABLE OVERWRITE learned
 DEFINE FIELD OVERWRITE in
     ON TABLE learned
     TYPE record<user>
-    ASSERT !!$value.id
+    ASSERT $value.exists() 
 ;
 
 DEFINE FIELD OVERWRITE out
     ON TABLE learned
     TYPE record<post>
-    ASSERT !!$value.id AND $value.learnable
+    ASSERT $value.exists() AND $value.learnable
 ;
 
 DEFINE FIELD OVERWRITE date

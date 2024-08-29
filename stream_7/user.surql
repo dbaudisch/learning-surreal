@@ -7,13 +7,13 @@ PERMISSIONS FOR select, delete
 DEFINE FIELD OVERWRITE username
     ON TABLE user
     TYPE string
-    ASSERT string::len($value) > 1
+    ASSERT $value.len() > 1
 ;
 
 DEFINE FIELD OVERWRITE email
     ON TABLE user
     TYPE option<string>
-    ASSERT $value IS NONE OR string::is::email($value)
+    ASSERT $value IS NONE OR $value.is_email()
 ;
 
 -- Gets automatically set when the user is created

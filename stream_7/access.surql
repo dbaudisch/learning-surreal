@@ -3,7 +3,7 @@ DEFINE ACCESS OVERWRITE users ON DATABASE TYPE RECORD
 YOUR_PUBLIC_KEY_HERE
 -----END PUBLIC KEY-----"
     AUTHENTICATE {
-        LET $userId = <record>$token.ID;
+        LET $userId = <record<user>>$token.ID;
         UPSERT $userId SET
             username = $token.name,
             email = $token.email

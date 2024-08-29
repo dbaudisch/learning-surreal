@@ -1,18 +1,7 @@
 DEFINE TABLE OVERWRITE authored
     TYPE RELATION
+    IN user OUT post ENFORCED
     SCHEMAFULL
-;
-
-DEFINE FIELD OVERWRITE in
-    ON TABLE authored
-    TYPE record<user>
-    ASSERT !!$value.id
-;
-
-DEFINE FIELD OVERWRITE out
-    ON TABLE authored
-    TYPE record<post>
-    ASSERT !!$value.id
 ;
 
 DEFINE FIELD OVERWRITE notes

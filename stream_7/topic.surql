@@ -13,7 +13,7 @@ DEFINE FIELD OVERWRITE description
 DEFINE FIELD OVERWRITE slug
     ON TABLE topic
     TYPE string
-    ASSERT string::len($value) > 1 AND $value == string::slug($value)
+    ASSERT $value.len() > 1 AND $value == $value.slug()
 ;
 
 DEFINE INDEX OVERWRITE unique_slug
