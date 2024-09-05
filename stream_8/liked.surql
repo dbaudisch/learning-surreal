@@ -26,7 +26,7 @@ DEFINE EVENT OVERWRITE on_create_update_likes_count ON TABLE liked
     WHEN $event == "CREATE"
     THEN {
         LET $target = $after.out;
-        IF !$target.exists() OR $target.draft {
+        IF !$target.exists() OR $target.draft OR $target.deleted_at { 
             THROW "Can't like something that doesn't exist";
         };
         IF $target.table() == "comment" AND !$target.approved {

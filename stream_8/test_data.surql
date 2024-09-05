@@ -10,6 +10,7 @@ LET $authors: array<{id: record<user>, username: string, email: string}> = $user
 INSERT INTO user $authors;
 
 -- GENERATE TEST POSTS
+LET $last_update_id: uuid = rand::uuid();
 LET $postCount: int = 2000;
 LET $posts: array<object> = (<array> 1..=$postCount).map(|$i: int| {
     id: type::thing("post", "post" + <string> $i),
@@ -20,7 +21,8 @@ LET $posts: array<object> = (<array> 1..=$postCount).map(|$i: int| {
     draft: rand::bool(),
     learnable: rand::bool(),
     og_image: "wololo.png",
-    published_at: rand::time()
+    published_at: rand::time(),
+    last_update_id: $last_update_id
 });
 
 INSERT INTO post $posts;

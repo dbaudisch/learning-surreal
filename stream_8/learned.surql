@@ -31,7 +31,7 @@ DEFINE EVENT OVERWRITE on_learn_create ON TABLE learned
     WHEN $event == "CREATE"
     THEN {
         LET $post = $after.out;
-        IF !$post.exists() OR $post.draft {
+        IF !$post.exists() OR $after.draft OR $after.deleted_at {
             THROW "Can't learn something that doesn't exist";
         };
         IF !$post.learnable {

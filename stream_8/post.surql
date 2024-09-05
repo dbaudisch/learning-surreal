@@ -87,6 +87,19 @@ DEFINE FIELD OVERWRITE last_updated
     COMMENT "The date and time the post was last updated"
 ;
 
+DEFINE FIELD OVERWRITE deleted_at
+    ON TABLE post
+    TYPE option<datetime>
+    DEFAULT NONE
+    COMMENT "The date and time the post was marked as deleted, it will be automatically deleted after a certain amount of time"
+;
+
+DEFINE FIELD OVERWRITE last_update_id
+    ON TABLE post
+    TYPE uuid
+    COMMENT "The ID of the last update to the post - used to detect deleted posts"
+;
+
 DEFINE FIELD OVERWRITE likes_count
     ON TABLE post
 	TYPE int
